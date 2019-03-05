@@ -78,14 +78,29 @@ class STFT{
         this.processFunc = processFunc
         let frames = new Array();
         let arrayHops = Math.floor(
-            (buffer.length - this.fftSize) / parseFloat(this.hopSize)
-        );
+            (buffer.length - this.windowSize) / parseFloat(this.windowSize - this.hopSize)
+        )+1;
         let numHops = Math.min(arrayHops, maxHops);
         let size = Math.round(this.fftSize / 2 ) + 1;
         for (let n = 0; n < numHops; n++){
-          let start = n * this.hopSize;
-          let end = start + this.fftSize;
+          let start = n * (this.windowSize-this.hopSize);
+          let end = start + this.windowSize;
+
           let windowed = this.window.process(buffer.slice(start, end));
+          var len_buffer = windowed.length
+          for (var i=0; i<Math.floor((this.fftSize-len_buffer)/2); i++)
+          {
+            windowed.unshift(0);
+          }
+          for (var i=0; i<Math.floor((this.fftSize-len_buffer)/2); i++)
+          {
+            windowed.push(0);
+          }
+          if (windowed.length<this.fftSize)
+          {
+            windowed.push(0);
+          }
+
           this.processSegment(windowed,
                 (real, imag) => {
                   let mag = this.processFunc(real, imag);
