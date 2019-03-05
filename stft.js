@@ -71,7 +71,7 @@ class STFT{
     processSegment(buffer, processFunc) {
         this.fft.forward(buffer);
         processFunc(this.fft.real, this.fft.imag);
-        return this.fft.inverse(this.fft.real, this.fft.imag);
+        //return this.fft.inverse(this.fft.real, this.fft.imag);
     }
 
     analyze(buffer, processFunc = this.magnitude, maxHops = 100000) {
